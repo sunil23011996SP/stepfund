@@ -9,6 +9,11 @@ import UIKit
 
 class SubscriptionPlanTableViewCell: UITableViewCell {
 
+    @IBOutlet weak var lblPlanName: UILabel!
+    @IBOutlet weak var lblPlanAmount: UILabel!
+    @IBOutlet weak var lblPlanPercentage: UILabel!
+    @IBOutlet weak var imgCheckMark: UIImageView!
+
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code

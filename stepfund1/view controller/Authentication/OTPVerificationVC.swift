@@ -19,12 +19,18 @@ class OTPVerificationVC: UIViewController {
     @IBOutlet weak var viewResendOTP: UIView!
     @IBOutlet weak var lblOTPTimer: UILabel!
 
+    @IBOutlet weak var viewpopupMain: UIView!
+    @IBOutlet weak var viewpopup: UIView!
+    @IBOutlet weak var labelYouAreIn: UILabel!
+    @IBOutlet weak var labelyourAccount: UILabel!
+    @IBOutlet weak var btnExporeApp: UIButton!
     
     var fromSignUpVC : Bool = true
     var otp = ""
     var token = ""
     var fullname = ""
     var email = ""
+    var countryCode = ""
     var phoneno = ""
     var password = ""
     var referalcode = ""
@@ -43,6 +49,11 @@ class OTPVerificationVC: UIViewController {
         btnVerify.titleLabel?.font =  UIFont(name: "GolosText-SemiBold", size: 16)
         labeldidntget.font = UIFont(name: "GolosText-Regular", size: 14)
         btnResendOtp.titleLabel?.font =  UIFont(name: "GolosText-Medium.ttf", size: 16)
+        
+        labelYouAreIn.font =  UIFont(name: "GolosText-SemiBold", size: 26)
+        labelyourAccount.font = UIFont(name: "GolosText-Regular", size: 14)
+        btnExporeApp.titleLabel?.font =  UIFont(name: "GolosText-SemiBold", size: 16)
+
         
         self.txtOtpfieldview.fieldsCount = 4
         self.txtOtpfieldview.fieldBorderWidth = 1
@@ -82,20 +93,30 @@ class OTPVerificationVC: UIViewController {
             AlertView.showOKTitleAlert("Please enter valid code", viewcontroller: self)
         }
         else if enteredOTP == otp{
-            let vc = CreateNewPasswordVC.viewController()
-            vc.token = token
-            self.navigationController?.pushViewController(vc, animated: true)
+            
+            if fromSignUpVC == true{
+                postSignupEncryptionAPI()
+            }else{
+                let vc = CreateNewPasswordVC.viewController()
+                vc.token = token
+                self.navigationController?.pushViewController(vc, animated: true)
+            }
         }
     }
     
+    
+    
     @IBAction func btnResendOTPClikced(_ sender: UIButton) {
-        
         self.sendEmailEncryptionAPI(email: email)
     }
     
-   
     @IBAction func backButtonClikced(_ sender: UIButton) {
         self.navigationController?.popViewController(animated: true)
+    }
+    
+    @IBAction func btnExploreAppClicked(_ sender: UIButton) {
+        let vc = HomeViewController.viewController()
+        self.navigationController?.pushViewController(vc, animated: true)
     }
 }
 
@@ -124,8 +145,8 @@ extension OTPVerificationVC{
         let parameters = "{ \"email\": \"\(email)\" }"
         let postData = parameters.data(using: .utf8)
 
-        var request = URLRequest(url: URL(string: "http://3.108.53.131:8088/api/v1/general/get_encryption")!,timeoutInterval: Double.infinity)
-        request.addValue("KWpgz1c6i9pDcvh8T/KbUA==", forHTTPHeaderField: "api-key")
+        var request = URLRequest(url: URL(string: DataManager.shared.getURL(.getEncryption))!,timeoutInterval: Double.infinity)
+        request.addValue("Gemflb3MR+S7AcOvPSfNSA==", forHTTPHeaderField: "api-key")
         request.addValue("en", forHTTPHeaderField: "accept-language")
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
 
@@ -148,8 +169,8 @@ extension OTPVerificationVC{
 
         let postData = envalue.data(using: .utf8)
 
-        var request = URLRequest(url: URL(string: "http://3.108.53.131:8088/api/v1/general/send_email")!,timeoutInterval: Double.infinity)
-        request.addValue("KWpgz1c6i9pDcvh8T/KbUA==", forHTTPHeaderField: "api-key")
+        var request = URLRequest(url: URL(string: DataManager.shared.getURL(.sendEmail))!,timeoutInterval: Double.infinity)
+        request.addValue("Gemflb3MR+S7AcOvPSfNSA==", forHTTPHeaderField: "api-key")
         request.addValue("en", forHTTPHeaderField: "accept-language")
         request.addValue("text/plain", forHTTPHeaderField: "Content-Type")
 
@@ -163,17 +184,15 @@ extension OTPVerificationVC{
           }
             self.sendEmailDecryptionAPI(resEncValue: String(data: data, encoding: .utf8)!)
         }
-
         task.resume()
-
     }
     
     func sendEmailDecryptionAPI(resEncValue:String){
                 
         let postData = resEncValue.data(using: .utf8)
 
-        var request = URLRequest(url: URL(string: "http://3.108.53.131:8088/api/v1/general/get_decryption")!,timeoutInterval: Double.infinity)
-        request.addValue("KWpgz1c6i9pDcvh8T/KbUA==", forHTTPHeaderField: "api-key")
+        var request = URLRequest(url: URL(string: DataManager.shared.getURL(.getDecryption))!,timeoutInterval: Double.infinity)
+        request.addValue("Gemflb3MR+S7AcOvPSfNSA==", forHTTPHeaderField: "api-key")
         request.addValue("en", forHTTPHeaderField: "accept-language")
         request.addValue("text/plain", forHTTPHeaderField: "Content-Type")
 
@@ -187,9 +206,7 @@ extension OTPVerificationVC{
                     DispatchQueue.main.async {                        
                         let decoder = JSONDecoder()
                         if let jsonData = try? decoder.decode(sendEmailResModel.self, from: data) {
-                            
                             print("response",jsonData)
-                            
                             if jsonData.code == "4" {
                                 self.seconds = 30
                                 self.runTimer()
@@ -201,21 +218,105 @@ extension OTPVerificationVC{
                                 AlertView.showOKTitleAlert(jsonData.message, viewcontroller: self)
                             }
                             AppData.HideProgress()
-
                         }
-                        
-                        
                     }
-                    
-                    
-                    
                 }
             } catch {
                 print("error")
             }
         }
         task.resume()
+    }
+    
+    func postSignupEncryptionAPI(){
+        AppData.ShowProgress()
+        
+        let parameters = "{\"fullname\":\"\(fullname)\",\"email\": \"\(email)\",\"country_code\": \"\(countryCode)\",\"phone\":\"\(phoneno)\",\"password\":\"\(password)\",\"device_type\":\"I\",\"device_id\": \"\(AppData.deviceId)\"}"
+        
+        let postData = parameters.data(using: .utf8)
 
+        var request = URLRequest(url: URL(string: DataManager.shared.getURL(.getEncryption))!,timeoutInterval: Double.infinity)
+        request.addValue("Gemflb3MR+S7AcOvPSfNSA==", forHTTPHeaderField: "api-key")
+        request.addValue("en", forHTTPHeaderField: "accept-language")
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        request.httpMethod = "POST"
+        request.httpBody = postData
+
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+          guard let data = data else {
+            print(String(describing: error))
+            return
+          }
+            self.postSignupAPI(envalue: String(data: data, encoding: .utf8)!)
+        }
+
+        task.resume()
+
+    }
+    
+    func postSignupAPI(envalue:String){
+        let postData = envalue.data(using: .utf8)
+
+        var request = URLRequest(url: URL(string: DataManager.shared.getURL(.signup))!,timeoutInterval: Double.infinity)
+        request.addValue("Gemflb3MR+S7AcOvPSfNSA==", forHTTPHeaderField: "api-key")
+        request.addValue("en", forHTTPHeaderField: "accept-language")
+        request.addValue("text/plain", forHTTPHeaderField: "Content-Type")
+        request.httpMethod = "POST"
+        request.httpBody = postData
+
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+          guard let data = data else {
+            print(String(describing: error))
+            return
+          }
+            self.postSignupDecryptionAPI(resEncValue: String(data: data, encoding: .utf8)!)
+        }
+        task.resume()
+    }
+    
+    func postSignupDecryptionAPI(resEncValue:String){
+                
+        let postData = resEncValue.data(using: .utf8)
+
+        var request = URLRequest(url: URL(string: DataManager.shared.getURL(.getDecryption))!,timeoutInterval: Double.infinity)
+        request.addValue("Gemflb3MR+S7AcOvPSfNSA==", forHTTPHeaderField: "api-key")
+        request.addValue("en", forHTTPHeaderField: "accept-language")
+        request.addValue("text/plain", forHTTPHeaderField: "Content-Type")
+
+        request.httpMethod = "POST"
+        request.httpBody = postData
+
+        let task = URLSession.shared.dataTask(with: request as URLRequest) { data, response, error in
+            do {
+                if let data = data {
+                    DispatchQueue.main.async {
+                        let decoder = JSONDecoder()
+                        if let jsonData = try? decoder.decode(LoginResModel.self, from: data) {
+                            print("response",jsonData)
+                            if jsonData.code == "1" {
+                                UserDefaultsSettings.storeUserPrefrences(jsonData.data)
+                                UserDefaultsSettings.acessToken = jsonData.data?.token ?? ""
+                                
+                                print("token",jsonData.data?.encToken ?? "")
+                                
+                                self.viewpopupMain.isHidden = false
+                                self.viewpopup.isHidden = false
+                                UserDefaults.standard.set(true, forKey: "isLoggedIn")
+
+                            }
+                            else{
+                                AlertView.showOKTitleAlert(jsonData.message ?? "", viewcontroller: self)
+                            }
+                            AppData.HideProgress()
+                        }
+                    }
+                }
+            } catch {
+                print("error")
+            }
+        }
+        task.resume()
     }
     
 }

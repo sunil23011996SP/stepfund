@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import Alamofire
 
 class DataManager: NSObject {
     
@@ -18,36 +17,8 @@ class DataManager: NSObject {
     
     static let shared   = DataManager()
     let baseUrl         = WebServiceURL.live
-//    let baseUrl         = WebServiceURL.local
 
     
-    let apiKey          = "bd_cafeunido"
-    let osType          = "Ios"
-    let appName         = "CafeUnido"
-    
-    var authTokens: String? {
-        return UserDefaults.Tokens.string(forKey: .authToken)
-    }
-    
-    
-    // Create http headers
-    func getHttpHeaders() -> HTTPHeaders {
-        var httpHeader = HTTPHeaders()
-        httpHeader["Content-Type"] = "application/json"
-        httpHeader["Authorization"] = UserDefaults.standard.string(forKey: "authToken") ?? ""
-        httpHeader["X-localization"] = LocalizationSystem.sharedInstance.getLanguage()
-        return httpHeader
-    }
-    
-    func getMultipartHttpHeaders() -> HTTPHeaders {
-        var httpHeader = HTTPHeaders()
-        httpHeader["Content-type"] = "multipart/form-data"
-        httpHeader["Authorization"] = UserDefaults.standard.string(forKey: "authToken") ?? ""
-        httpHeader["X-localization"] = LocalizationSystem.sharedInstance.getLanguage()
-        return httpHeader
-    }
-    
-    //------------------------------------------------------------------------------
     // MARK:- Custom Methods
     //------------------------------------------------------------------------------
     
@@ -64,16 +35,8 @@ class DataManager: NSObject {
 //------------------------------------------------------------------------------
 
 struct WebServiceURL {
-    static var local        = "https://trootechproducts.com:8041/troker/api/"
-    static let live         = "https://troker.app/troker/api/"
+    static let live  = "http://44.204.4.225:8088/api/v1/"
 }
-
-struct socketUrl {
-//    static var baseUrl = "https://trootechproducts.com:8041"  //local
-    static var baseUrl = "https://troker.app/"      //live
-    static var path = "/socket.io"
-}
-
 
 //------------------------------------------------------------------------------
 // MARK:-
@@ -81,72 +44,30 @@ struct socketUrl {
 //------------------------------------------------------------------------------
 
 enum WSEndPoints: String {
-    case login                              = "login"
-    case register                           = "register"
-    case get_countries                      = "countries/get"
-    case forgotPassword                     = "forgot-password"
-    case send_otp                           = "send-otp"
-    case verify_otp                         = "verify-otp"
-    case updateContact                         = "update-contact"
-    case logout                             = "logout"
-    case change_password                    = "change-password"
-    case get_profile_details                = "get-profile-details"
-    case update_profile_pic                 = "update-profile-pic"
-    case update_profile                     = "update-profile"
-    case check_user                         = "check-user"
+    case getAdminBank                              = "user/get_admin_bank"
+    case getDecryption                           = "general/get_decryption"
+    case getEncryption                      = "general/get_encryption"
+    case addSubscription                     = "subscription/add_subscription"
     
-    //Bank
-    case getBankDetails           = "get-bank-details"
-    case saveBankDetails           = "save-bank-details"
+    case getSubscription                     = "subscription/get_subscription"
+    
+    case getUser                     = "user/get_user"
+    case getFAQ                     = "general/get_faq"
+    case changePassword                     = "user/change_password"
+    case addUpdateBank                     = "user/add_update_bank"
+    case contactUs                     = "general/contact_us"
+    case editProfile                     = "user/edit_profile"
+    case DOKYC                     = "user/do_kyc"
+    case TotalStepEarn                     = "user/total_step_n_earn"
+    case GetKeysList                     = "general/get_keys_list"
+    case login                     = "user/login"
+    case forgotPassword                     = "user/forgot_password"
+    case sendEmail                     = "general/send_email"
+    case signup                     = "user/signup"
+    case resetPassword                     = "user/reset_password"
+    case checkDuplication                     = "user/check_duplication"
 
-    //Card
-    case getSavedCards            = "card-details/get"
-    case saveCard                 = "card-details/save"
-    case updateCard               = "card-details/edit"
-    case deleteCard               = "card-details/delete"
     
-    //create job
-    case getTruckTypes            = "truck-types/get"
-    case deleteJob                = "job/delete"
-    case getLoadType              = "load-types/get"
-    case createJob                = "job/create"
-    
-    case editJob                  = "job/edit"
-    case deleteJobDocument        = "job/document/delete"
-    case deleteJobLoadImage       = "job/load-image/delete"
-
-    //ongoing job
-    case ongoingJob             = "job/ongoing"
-    case ongoingJobDetail       = "job/details"
-    
-    //Active job
-    case activeJob              = "customer/job/active"
-    case bidList                = "customer/job/bids"
-    
-    // Upcoming
-    case upcomingJobList                    = "job/up-comming"
-    case uploadJobLoadImages                = "job/load-image/upload"
-    case uploadJobDocuments                 = "job/document/upload"
-    case canceljob                          = "job/cancel"
-
-    // Past
-    case pastJobList                        = "job/past"
-    
-    // Submit review
-    case submitReview                 = "job/submit-review"
-    
-    // Wallet
-    case withdrawMoney                 = "wallet/withdraw-money"
-    case getTrasectionList                = "wallet/transaction/get"
-    case getWalletBalance                = "wallet/get-user-balance"
-    case addMoneyToWallet                = "wallet/add-money"
-
-    case payJobAmount                = "job/pay-amount"
-    
-     case NotificationList                = "notifications/get"
-    case NotificationCount                =  "notifications/un-read-count/get"
-    case MarkAsRead                =  "notifications/mark-as-read"
-    case jobStatus                =  "job/status/get"
 }
 
 //------------------------------------------------------------------------------

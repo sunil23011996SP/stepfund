@@ -8,7 +8,6 @@
 
 import Foundation
 import UIKit
-import CryptoSwift
 
 extension String {
     
@@ -17,10 +16,6 @@ extension String {
     //--------------------------------------------------
     
     
-    // Variable used to get localized key
-    var localized: String {
-        return LocalizationSystem.sharedInstance.localizedStringForKey(key: self, comment: "")
-    }
     
     var htmlAttributedString: NSAttributedString? {
         return try? NSAttributedString(
@@ -51,22 +46,7 @@ extension String {
         return self.trimmingCharacters(in: .whitespacesAndNewlines)
     }
     
-    // This code will add line spacing for multine string
-    var addLineSpacing: NSAttributedString {
-        
-        // Create paragram instance to add line spacing
-        let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.lineSpacing = 5
-        
-        // Set attribute string for message
-        let attributes: [NSAttributedString.Key : Any] = [
-            NSAttributedString.Key.font: UIFont(name: FontName.MADETOMMY, size: 17)!,
-            NSAttributedString.Key.paragraphStyle: paragraphStyle,
-            NSAttributedString.Key.foregroundColor: UIColor(hex: "#737373")
-        ]
-        
-        return NSAttributedString(string: self, attributes: attributes)
-    }
+
     
     var isBackspace: Bool {
         let char = self.cString(using: String.Encoding.utf8)!
@@ -103,77 +83,15 @@ extension String {
     }
     
     
-    //--------------------------------------------------
-    // MARK:- Encrypt String
-    //--------------------------------------------------
+
     
-    func encrypt() -> String  {
-        if let aes = try? AES(key: "0123456789abcdef", iv: "fedcba9876543210"),
-            let encrypted = try? aes.encrypt(Array(self.utf8)) {
-            return encrypted.toHexString()
-        }
-        return ""
-    }
-    
-    func decrypt() -> String {
-        
-        let array = Array(hex: self)
-        
-        if let aes = try? AES(key: "0123456789abcdef", iv: "fedcba9876543210") {
-            
-            if let decrypt = try? aes.decrypt(array),
-                let strBase64 =  String(bytes: decrypt, encoding: .utf8),
-                let data = Data(base64Encoded: strBase64)
-            {
-                return String(data: data, encoding: .utf8) ?? ""
-            }
-        }
-        return ""
-    }
-    
-    var encryptParameter: String {
-        guard let aes = try? AES(key: "0123456789abcdef", iv: "fedcba9876543210"),
-            let encrypted = try? aes.encrypt(Array(self.utf8)) else { return "" }
-        return encrypted.toHexString()
-        
-    }
     
     var toBase64:String {
         guard let data = self.data(using: String.Encoding.utf8) else { return "" }
         return data.base64EncodedString(options: Data.Base64EncodingOptions(rawValue: 0))
     }
-    
-    func insertSeparator(_ separatorString: String, atEvery n: Int) -> String {
-        guard 0 < n else { return self }
-        return self.enumerated().map({String($0.element) + (($0.offset != self.count - 1 && $0.offset % n ==  n - 1) ? "\(separatorString)" : "")}).joined()
-    }
 
-    mutating func insertedSeparator(_ separatorString: String, atEvery n: Int) {
-        self = insertSeparator(separatorString, atEvery: n)
-    }
-    
-    
-    //--------------------------------------------------
-    // MARK:- Functions
-    //--------------------------------------------------
-    
-    // This code will add line spacing for multine string
-    // Color is dynamic which are get as function arguments
-    func addLineSpacing(fontColor: UIColor, size: CGFloat) -> NSAttributedString {
-        
-        // Create paragram instance to add line spacing
-        let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.lineSpacing = 5
-        
-        // Set attribute string for message
-        let attributes: [NSAttributedString.Key : Any] = [
-            NSAttributedString.Key.font: UIFont(name: FontName.MADETOMMY, size: size)!,
-            NSAttributedString.Key.paragraphStyle: paragraphStyle,
-            NSAttributedString.Key.foregroundColor: fontColor
-        ]
-        
-        return NSAttributedString(string: self, attributes: attributes)
-    }
+  
     
     //==========================================
     //MARK: - To get Localized String from String
@@ -219,41 +137,6 @@ extension String {
         return ceil(boundingBox.width)
     }
     
-    func timeInterval(timeAgo:String, dateFormatter: String) -> String
-    {
-        
-        let dateWithTime = Date.convertUTCStringToDate(timeAgo, dateFormat: dateFormatter)
-        
-        let interval = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute, .second] , from: dateWithTime!, to: Date())
-        
-        if let year = interval.year, year > 0 {
-            return year == 1 ? "\(year)" + " " + StringKeys.TimeCalculation.year_ago.localized : "\(year)" + " " + StringKeys.TimeCalculation.years_ago.localized
-        } else if let month = interval.month, month > 0 {
-            return month == 1 ? "\(month)" + " " + StringKeys.TimeCalculation.month_ago.localized : "\(month)" + " " + StringKeys.TimeCalculation.months_ago.localized
-        } else if let day = interval.day, day > 0 {
-            if day < 7{
-                return day == 1 ? "\(day)" + " " + StringKeys.TimeCalculation.day_ago.localized : "\(day)" + " " + StringKeys.TimeCalculation.days_ago.localized
-            }else {
-                return "\(Date().weeksFrom(dateWithTime!))" + " " + StringKeys.TimeCalculation.week_ago.localized
-            }
-        }else if let hour = interval.hour, hour > 0 {
-            
-            return hour == 1 ? "\(hour)" + " " + StringKeys.TimeCalculation.hour_ago.localized : "\(hour)" + " " + StringKeys.TimeCalculation.hours_ago.localized
-            
-        }else if let minute = interval.minute, minute > 0 {
-            return minute == 1 ? "\(minute)" + " " + StringKeys.TimeCalculation.minute_ago.localized : "\(minute)" + " " + StringKeys.TimeCalculation.minutes_ago.localized
-        }else if let second = interval.second, second > 0 {
-            
-            if second <= 15{
-                return second == 1 ? StringKeys.TimeCalculation.justnow.localized : "\(second)" + " " + StringKeys.TimeCalculation.seconds_ago.localized
-            }else{
-                return second == 1 ? "\(second)" + " " + StringKeys.TimeCalculation.second_ago.localized : "\(second)" + " " + StringKeys.TimeCalculation.seconds_ago.localized
-            }
-            
-        } else {
-            return StringKeys.TimeCalculation.a_moment_ago.localized
-        }
-    }
 }
 
 

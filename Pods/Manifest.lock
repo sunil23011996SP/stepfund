@@ -1,0 +1,37 @@
+PODS:
+  - AWSCore (2.35.0)
+  - AWSS3 (2.35.0):
+    - AWSCore (= 2.35.0)
+  - CountryPickerView (3.3.0)
+  - CropViewController (2.6.1)
+  - IQKeyboardManagerSwift (6.5.11)
+  - MKMagneticProgress (1.4)
+
+DEPENDENCIES:
+  - AWSCore
+  - AWSS3
+  - CountryPickerView
+  - CropViewController
+  - IQKeyboardManagerSwift
+  - MKMagneticProgress
+
+SPEC REPOS:
+  trunk:
+    - AWSCore
+    - AWSS3
+    - CountryPickerView
+    - CropViewController
+    - IQKeyboardManagerSwift
+    - MKMagneticProgress
+
+SPEC CHECKSUMS:
+  AWSCore: f644b48f9508301ba5d2692b5a0c418ca47e1673
+  AWSS3: 062c34dd2765593fe105d1a571d567b62bf26854
+  CountryPickerView: 6322ada32a80b0cd721b0267282a5c24f406f263
+  CropViewController: 58fb440f30dac788b129d2a1f24cffdcb102669c
+  IQKeyboardManagerSwift: c7955c0bdbf7b2eb29bb7daaa44e3d90f55a9a85
+  MKMagneticProgress: 006b8c763d62986661bcde03794a3dcf56cd084a
+
+PODFILE CHECKSUM: fb7c1151bf3a4236a6112addb43f2b421dba2f05
+
+COCOAPODS: 1.15.2

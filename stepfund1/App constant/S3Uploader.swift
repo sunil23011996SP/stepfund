@@ -12,17 +12,31 @@ import AWSS3
 class S3Uploader {
     
     // Change these to match your AWS setup
-    private let bucketName = "walkearn"
-    private let region = AWSRegionType.APSouth1 // Change to your region
+    private let bucketName = UserDefaults.standard.string(forKey: "aws_bucket_name") ?? ""
+    private let region = AWSRegionType.USEast1
 
-    func uploadImage(image: UIImage,folder: String, completion: @escaping (Result<URL, Error>) -> Void) {
+    func uploadImage(image: UIImage,folder: String,fileName:String, completion: @escaping (Result<URL, Error>) -> Void) {
+        
+        
+        let credentialsProvider = AWSStaticCredentialsProvider(
+            accessKey: UserDefaults.standard.string(forKey: "aws_access_key") ?? "",
+            secretKey: UserDefaults.standard.string(forKey: "aws_secret_key") ?? ""
+        )
+
+        let configuration = AWSServiceConfiguration(
+            region: .USEast1,
+            credentialsProvider: credentialsProvider
+        )
+    
+        AWSServiceManager.default().defaultServiceConfiguration = configuration
+
+        
         guard let imageData = image.jpegData(compressionQuality: 0.8) else {
             completion(.failure(NSError(domain: "S3Uploader", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid image data"])))
             return
         }
 
-        let uuid = UUID().uuidString
-        let fileName = "\(folder)/\(uuid).jpg"
+        let fileName = "\(folder)/\(fileName)"
 
         
         let expression = AWSS3TransferUtilityUploadExpression()

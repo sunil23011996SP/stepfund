@@ -93,7 +93,8 @@ class CreateNewPasswordVC: UIViewController {
         self.navigationController?.popViewController(animated: true)
     }
     @IBAction func btnBacktoLoginClicked(_ sender: UIButton) {
-        self.navigationController?.popViewController(animated: true)
+        
+        self.navigationController?.popToViewController(LoginViewController.viewController(), animated: true)
     }
 }
 //MARK: - Validation Check
@@ -108,7 +109,10 @@ extension CreateNewPasswordVC {
             AlertView.showOKTitleAlert("Please enter reset password", viewcontroller: self)
             return false
         }
-        
+        if txtNewPassword.text! !=  txtResetPassword.text!{
+            AlertView.showOKTitleAlert("Your new password and reset password do not match.", viewcontroller: self)
+            return false
+        }
         return true
         
     }
@@ -122,8 +126,8 @@ extension CreateNewPasswordVC{
         let parameters = "{ \"new_password\": \"\(email)\" }"
         let postData = parameters.data(using: .utf8)
 
-        var request = URLRequest(url: URL(string: "http://3.108.53.131:8088/api/v1/general/get_encryption")!,timeoutInterval: Double.infinity)
-        request.addValue("KWpgz1c6i9pDcvh8T/KbUA==", forHTTPHeaderField: "api-key")
+        var request = URLRequest(url: URL(string: DataManager.shared.getURL(.getEncryption))!,timeoutInterval: Double.infinity)
+        request.addValue("Gemflb3MR+S7AcOvPSfNSA==", forHTTPHeaderField: "api-key")
         request.addValue("en", forHTTPHeaderField: "accept-language")
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
 
@@ -146,11 +150,12 @@ extension CreateNewPasswordVC{
 
         let postData = envalue.data(using: .utf8)
 
-        var request = URLRequest(url: URL(string: "http://3.108.53.131:8088/api/v1/user/reset_password")!,timeoutInterval: Double.infinity)
-        request.addValue("KWpgz1c6i9pDcvh8T/KbUA==", forHTTPHeaderField: "api-key")
+        var request = URLRequest(url: URL(string: DataManager.shared.getURL(.resetPassword))!,timeoutInterval: Double.infinity)
+        request.addValue("Gemflb3MR+S7AcOvPSfNSA==", forHTTPHeaderField: "api-key")
         request.addValue("en", forHTTPHeaderField: "accept-language")
         request.addValue("text/plain", forHTTPHeaderField: "Content-Type")
-        request.addValue("17542034307prdDXuOFThFNOCfCIkUkQaKJ", forHTTPHeaderField: "token")
+        request.addValue(UserDefaultsSettings.user?.encToken ?? "", forHTTPHeaderField: "token")
+        
 
         request.httpMethod = "POST"
         request.httpBody = postData
@@ -172,8 +177,8 @@ extension CreateNewPasswordVC{
                 
         let postData = resEncValue.data(using: .utf8)
 
-        var request = URLRequest(url: URL(string: "http://3.108.53.131:8088/api/v1/general/get_decryption")!,timeoutInterval: Double.infinity)
-        request.addValue("KWpgz1c6i9pDcvh8T/KbUA==", forHTTPHeaderField: "api-key")
+        var request = URLRequest(url: URL(string: DataManager.shared.getURL(.getDecryption))!,timeoutInterval: Double.infinity)
+        request.addValue("Gemflb3MR+S7AcOvPSfNSA==", forHTTPHeaderField: "api-key")
         request.addValue("en", forHTTPHeaderField: "accept-language")
         request.addValue("text/plain", forHTTPHeaderField: "Content-Type")
 
@@ -189,15 +194,7 @@ extension CreateNewPasswordVC{
                     let decoder = JSONDecoder()
                     if let jsonData = try? decoder.decode(CommonResponse.self, from: data) {
                         print("response",jsonData)
-                        if jsonData.code == 1 {
-                            
-                            
-                            
-                            
-                            
-                        }else{
-                            
-                        }
+                        
                     }
                     
                 }
@@ -213,14 +210,9 @@ extension CreateNewPasswordVC{
 
 
 struct CommonResponse: Codable {
-    var code: Int?
+    var code: String?
     var message: String?
-    var data: CommonDataClass?
 }
 
 
-// MARK: - DataClass
-class CommonDataClass: Codable {
-    init() {
-    }
-}
+

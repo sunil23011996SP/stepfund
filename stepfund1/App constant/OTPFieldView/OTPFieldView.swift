@@ -128,6 +128,7 @@ import UIKit
         otpField.delegate = self
         otpField.tag = index + 1
         otpField.font = fieldFont
+        otpField.textColor = UIColor.white
         
         // Set input type for OTP fields
         switch otpInputType {

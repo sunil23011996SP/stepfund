@@ -73,8 +73,8 @@ extension ForgotPasswordViewController{
         let parameters = "{ \"email\": \"\(email)\" }"
         let postData = parameters.data(using: .utf8)
 
-        var request = URLRequest(url: URL(string: "http://3.108.53.131:8088/api/v1/general/get_encryption")!,timeoutInterval: Double.infinity)
-        request.addValue("KWpgz1c6i9pDcvh8T/KbUA==", forHTTPHeaderField: "api-key")
+        var request = URLRequest(url: URL(string: DataManager.shared.getURL(.getEncryption))!,timeoutInterval: Double.infinity)
+        request.addValue("Gemflb3MR+S7AcOvPSfNSA==", forHTTPHeaderField: "api-key")
         request.addValue("en", forHTTPHeaderField: "accept-language")
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
 
@@ -97,8 +97,8 @@ extension ForgotPasswordViewController{
 
         let postData = envalue.data(using: .utf8)
 
-        var request = URLRequest(url: URL(string: "http://3.108.53.131:8088/api/v1/user/forgot_password")!,timeoutInterval: Double.infinity)
-        request.addValue("KWpgz1c6i9pDcvh8T/KbUA==", forHTTPHeaderField: "api-key")
+        var request = URLRequest(url: URL(string: DataManager.shared.getURL(.forgotPassword))!,timeoutInterval: Double.infinity)
+        request.addValue("Gemflb3MR+S7AcOvPSfNSA==", forHTTPHeaderField: "api-key")
         request.addValue("en", forHTTPHeaderField: "accept-language")
         request.addValue("text/plain", forHTTPHeaderField: "Content-Type")
 
@@ -122,8 +122,8 @@ extension ForgotPasswordViewController{
                 
         let postData = resEncValue.data(using: .utf8)
 
-        var request = URLRequest(url: URL(string: "http://3.108.53.131:8088/api/v1/general/get_decryption")!,timeoutInterval: Double.infinity)
-        request.addValue("KWpgz1c6i9pDcvh8T/KbUA==", forHTTPHeaderField: "api-key")
+        var request = URLRequest(url: URL(string: DataManager.shared.getURL(.getDecryption))!,timeoutInterval: Double.infinity)
+        request.addValue("Gemflb3MR+S7AcOvPSfNSA==", forHTTPHeaderField: "api-key")
         request.addValue("en", forHTTPHeaderField: "accept-language")
         request.addValue("text/plain", forHTTPHeaderField: "Content-Type")
 
@@ -141,7 +141,6 @@ extension ForgotPasswordViewController{
                             if jsonData.code == "1" {
                                 AlertView.showAlert(jsonData.message, strMessage: "", button: ["OK"], viewcontroller: self) { (btn) in
                                     if btn == 0 {
-                                     
                                         let vc = OTPVerificationVC.viewController()
                                         vc.token = jsonData.data?.token ?? ""
                                         vc.otp = jsonData.data?.otp ?? ""
