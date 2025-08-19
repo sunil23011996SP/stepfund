@@ -61,7 +61,13 @@ class AddSubscriptionViewController: UIViewController,UIImagePickerControllerDel
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
         
-        self.postGetAdminBankDetailAPI()
+        if Reachability.isConnectedToNetwork(){
+            
+            self.postGetAdminBankDetailAPI()
+            
+        }else{
+            AlertView.showOKTitleAlert(AppConstant.noInternetConnection, viewcontroller: self)
+        }
         
         if isCropControllerOpen == false {
             //self.userProfileAPI()
@@ -81,10 +87,12 @@ class AddSubscriptionViewController: UIViewController,UIImagePickerControllerDel
     //--------------------------------------------------
     @IBAction func btnSubmitClikced(_ sender: UIButton) {
         if validate() {
+            if Reachability.isConnectedToNetwork(){
+                self.uploadFile(withImage: selectedProfileImage!)
+            }else{
+                AlertView.showOKTitleAlert(AppConstant.noInternetConnection, viewcontroller: self)
+            }
             
-            self.uploadFile(withImage: selectedProfileImage!)
-            
-            //self.postAddSubscriptionEncryptionAPI(imageurl: )
         }
     }
     @IBAction func btnCopyCodeClicked(_ sender: UIButton) {

@@ -75,16 +75,28 @@ final class AppData: NSObject {
     
     
     //set multiple Color in one label
-    class func setLabelMultipleColor(firstText: String, secondText: String,firstColor:UIColor,secondColor:UIColor) -> NSAttributedString{
-        let string = firstText + secondText as NSString
+    class func setLabelMultipleColor(firstText: String, secondText: String,thirdText: String,fourthText: String,fifthText: String,firstColor:UIColor,secondColor:UIColor,thirdColor:UIColor,fourthColor:UIColor,fifthColor:UIColor) -> NSAttributedString{
+        let string = firstText + secondText + thirdText + fourthText + fifthText as NSString
+        
         let result = NSMutableAttributedString(string: string as String)
         
         let attributesForFirstWord = [NSAttributedString.Key.foregroundColor:firstColor as UIColor]
         let attributesForSecondWord = [NSAttributedString.Key.foregroundColor:secondColor as UIColor]
+        let attributesForThirdWord = [NSAttributedString.Key.foregroundColor:thirdColor as UIColor]
+        let attributesForFourthWord = [NSAttributedString.Key.foregroundColor:fourthColor as UIColor]
+        let attributesForFifthWord = [NSAttributedString.Key.foregroundColor:fifthColor as UIColor]
+        
         result.setAttributes(attributesForFirstWord,
                              range: string.range(of: firstText))
         result.setAttributes(attributesForSecondWord,
                              range: string.range(of: secondText))
+        result.setAttributes(attributesForThirdWord,
+                             range: string.range(of: thirdText))
+        result.setAttributes(attributesForFourthWord,
+                             range: string.range(of: fourthText))
+        result.setAttributes(attributesForFifthWord,
+                             range: string.range(of: fifthText))
+        
         return NSAttributedString(attributedString: result)
     }
     

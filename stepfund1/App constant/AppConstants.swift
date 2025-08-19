@@ -14,9 +14,11 @@ var IsIphone5:Bool = false
 var SelectTruckTypeName = ""
 var SelectLoadTypeName = ""
 
-
 // MARK- General Keys
 struct AppConstant {
+    static let noInternetConnection = "Please check your internet connection."
+
+    
     static let appName    =  Bundle.main.infoDictionary!["CFBundleName"] as! String
     static let appLink    =  ""
     static let appDelegate = UIApplication.shared.delegate as! AppDelegate

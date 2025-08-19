@@ -108,10 +108,14 @@ class EditProfileViewController: UIViewController,UIImagePickerControllerDelegat
     //--------------------------------------------------
     @IBAction func btnSubmitClikced(_ sender: UIButton) {
         if validate() {
-            if isImageSelected == true{
-                uploadFile(withImage: imgUser.image!)
+            if Reachability.isConnectedToNetwork(){
+                if isImageSelected == true{
+                    uploadFile(withImage: imgUser.image!)
+                }else{
+                    self.postEncryptionAPI(imageurl: "")
+                }
             }else{
-                self.postEncryptionAPI(imageurl: "")
+                AlertView.showOKTitleAlert(AppConstant.noInternetConnection, viewcontroller: self)
             }
         }
     }

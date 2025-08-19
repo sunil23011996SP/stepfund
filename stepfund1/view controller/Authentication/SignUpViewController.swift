@@ -100,7 +100,11 @@ class SignUpViewController: UIViewController {
     
     @IBAction func btnUpdateClikced(_ sender: UIButton) {
         if validate() {
-            self.postEncryptionAPI()
+            if Reachability.isConnectedToNetwork(){
+                self.postEncryptionAPI()
+            }else{
+                AlertView.showOKTitleAlert(AppConstant.noInternetConnection, viewcontroller: self)
+            }
         }
     }
     
@@ -240,9 +244,13 @@ extension SignUpViewController {
    @IBAction func tapLabel(gesture: UITapGestureRecognizer) {
            if gesture.didTapAttributedTextInLabel(label: labelByClicking, targetText: "Terms of Service") {
                print("Terms of service")
+               let vc = TermsAndConditionVC.viewController()
+               self.navigationController?.pushViewController(vc, animated: true)
                
            } else if gesture.didTapAttributedTextInLabel(label: labelByClicking, targetText: "Privacy Policy.") {
                print("Privacy policy")
+               let vc = PrivacyPolicyVC.viewController()
+               self.navigationController?.pushViewController(vc, animated: true)
            } else {
                print("Tapped none")
            }

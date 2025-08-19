@@ -57,7 +57,12 @@ class SubscriptionListViewController: UIViewController,UITableViewDelegate,UITab
         tblviewSubscribePlan.delegate = self
         tblviewSubscribePlan.dataSource = self
 
-        postSubscriptionListAPI()
+        if Reachability.isConnectedToNetwork(){
+            postSubscriptionListAPI()
+        }else{
+            AlertView.showOKTitleAlert(AppConstant.noInternetConnection, viewcontroller: self)
+        }
+       
     }
     
     //--------------------------------------------------

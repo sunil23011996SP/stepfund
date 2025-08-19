@@ -28,7 +28,13 @@ class FAQsViewController: UIViewController,UITableViewDelegate,UITableViewDataSo
 
         tblviewFaqs.delegate = self
         tblviewFaqs.dataSource = self
-        postForgotPasswordAPI()
+        
+        if Reachability.isConnectedToNetwork(){
+            self.postFAQsAPI()
+        }else{
+            AlertView.showOKTitleAlert(AppConstant.noInternetConnection, viewcontroller: self)
+        }
+        
         // Do any additional setup after loading the view.
     }
     
@@ -70,8 +76,8 @@ class FAQsViewController: UIViewController,UITableViewDelegate,UITableViewDataSo
 //MARK:- API calling
 extension FAQsViewController{
     
-    func postForgotPasswordAPI(){
-
+    func postFAQsAPI(){
+        
         AppData.ShowProgress()
         
         var request = URLRequest(url: URL(string: DataManager.shared.getURL(.getFAQ))!,timeoutInterval: Double.infinity)

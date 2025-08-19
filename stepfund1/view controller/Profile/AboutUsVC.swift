@@ -17,7 +17,12 @@ class AboutUsVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         labelAboutUs.font = UIFont(name: "GolosText-SemiBold", size: 16)
-        postAboutUsAPI()
+        if Reachability.isConnectedToNetwork(){
+            postAboutUsAPI()
+        }else{
+            AlertView.showOKTitleAlert(AppConstant.noInternetConnection, viewcontroller: self)
+        }
+        
     }
     class func viewController() -> AboutUsVC {
         return UIStoryboard.main.instantiateViewController(withIdentifier: "AboutUsVC") as! AboutUsVC

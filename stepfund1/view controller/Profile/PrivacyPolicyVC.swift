@@ -18,7 +18,11 @@ class PrivacyPolicyVC: UIViewController {
 
         labelPrivacy.font = UIFont(name: "GolosText-SemiBold", size: 16)
 
-        postPrivacyPolicyAPI()
+        if Reachability.isConnectedToNetwork(){
+            self.postPrivacyPolicyAPI()
+        }else{
+            AlertView.showOKTitleAlert(AppConstant.noInternetConnection, viewcontroller: self)
+        }
         
         // Do any additional setup after loading the view.
     }

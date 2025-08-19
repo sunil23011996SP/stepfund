@@ -42,6 +42,7 @@ class FirstViewController: UIViewController,UIScrollViewDelegate {
 
     }
     override func viewWillAppear(_ animated: Bool) {
+        setupMultipleTapLabel()
         super.viewWillAppear(true)
     }
     
@@ -82,10 +83,11 @@ class FirstViewController: UIViewController,UIScrollViewDelegate {
     func createSlides() -> [FirstScreenContent] {
 
         let slide1:FirstScreenContent = Bundle.main.loadNibNamed("FirstScreenContent", owner: self, options: nil)?.first as! FirstScreenContent
+        
         slide1.labelTitle.font = UIFont(name: "GolosText-SemiBold", size: 26)
         slide1.labelDesc.font = UIFont(name: "GolosText-Regular", size: 14)
-
-        slide1.labelTitle.text = "Track Your Steps, Earn Rewards"
+        slide1.labelTitle.attributedText = AppData.setLabelMultipleColor(firstText: "Track Your ", secondText: "Steps", thirdText: ", ", fourthText: "Earn", fifthText: " Rewards", firstColor: UIColor.white, secondColor: UIColor(hex: "0059FF"), thirdColor: UIColor.white, fourthColor: UIColor(hex: "0059FF"), fifthColor: UIColor.white)
+        //slide1.labelTitle.text = "Track Your Steps, Earn Rewards"
         slide1.labelDesc.text = "Start walking and watch your steps turn into silver coins every day."
         
         let slide2:FirstScreenContent = Bundle.main.loadNibNamed("FirstScreenContent", owner: self, options: nil)?.first as! FirstScreenContent
@@ -164,4 +166,40 @@ class FirstViewController: UIViewController,UIScrollViewDelegate {
         return UIColor(red: red, green: green, blue: blue, alpha: alpha)
     }
     
+}
+//MARK: - setup clickable label
+extension FirstViewController {
+
+    func setupMultipleTapLabel() {
+           labelByClicking.text = "By Clicking  you agree to Terms of Services & Privacy policy"
+           let text = (labelByClicking.text)!
+           let underlineAttriString = NSMutableAttributedString(string: text)
+           let termsRange = (text as NSString).range(of: "Terms of Services")
+           let privacyRange = (text as NSString).range(of: "Privacy policy")
+           underlineAttriString.addAttribute(.foregroundColor, value: UIColor.blue, range: termsRange)
+           underlineAttriString.addAttribute(.foregroundColor, value: UIColor.blue, range: privacyRange)
+           
+        labelByClicking.attributedText = underlineAttriString
+           let tapAction = UITapGestureRecognizer(target: self, action: #selector(self.tapLabel(gesture:)))
+        labelByClicking.isUserInteractionEnabled = true
+        labelByClicking.lineBreakMode = .byCharWrapping
+
+        labelByClicking.addGestureRecognizer(tapAction)
+
+
+       }
+
+   @IBAction func tapLabel(gesture: UITapGestureRecognizer) {
+           if gesture.didTapAttributedTextInLabel(label: labelByClicking, targetText: "Terms of Services") {
+               print("Terms of service")
+               let vc = TermsAndConditionVC.viewController()
+               self.navigationController?.pushViewController(vc, animated: true)
+           } else if gesture.didTapAttributedTextInLabel(label: labelByClicking, targetText: "Privacy policy") {
+               print("Privacy policy")
+               let vc = PrivacyPolicyVC.viewController()
+               self.navigationController?.pushViewController(vc, animated: true)
+           } else {
+               print("Tapped none")
+           }
+   }
 }

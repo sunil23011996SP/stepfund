@@ -45,6 +45,7 @@
 		BC782C4E2E448ECC00D86724 /* SubscriptionPlanTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC782C4C2E448ECB00D86724 /* SubscriptionPlanTableViewCell.swift */; };
 		BC782C4F2E448ECC00D86724 /* SubscriptionPlanTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = BC782C4D2E448ECB00D86724 /* SubscriptionPlanTableViewCell.xib */; };
 		BC7BF2462E431F98006CDFF4 /* EditProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC7BF2452E431F98006CDFF4 /* EditProfileViewController.swift */; };
+		BC8919C42E51907200C6CF3C /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC8919C32E51907200C6CF3C /* Reachability.swift */; };
 		BC8DC8872E49B46E00956E29 /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC8DC8862E49B46E00956E29 /* SignUpViewController.swift */; };
 		BCA24B142E4F20DD008E3857 /* UITextField+InputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA24B132E4F20DD008E3857 /* UITextField+InputView.swift */; };
 		BCA24B162E4F63FA008E3857 /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA24B152E4F63F9008E3857 /* DataManager.swift */; };
@@ -117,6 +118,7 @@
 		BC782C4C2E448ECB00D86724 /* SubscriptionPlanTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionPlanTableViewCell.swift; sourceTree = "<group>"; };
 		BC782C4D2E448ECB00D86724 /* SubscriptionPlanTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SubscriptionPlanTableViewCell.xib; sourceTree = "<group>"; };
 		BC7BF2452E431F98006CDFF4 /* EditProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileViewController.swift; sourceTree = "<group>"; };
+		BC8919C32E51907200C6CF3C /* Reachability.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
 		BC8DC8862E49B46E00956E29 /* SignUpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpViewController.swift; sourceTree = "<group>"; };
 		BCA24B132E4F20DD008E3857 /* UITextField+InputView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITextField+InputView.swift"; sourceTree = "<group>"; };
 		BCA24B152E4F63F9008E3857 /* DataManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
@@ -262,6 +264,7 @@
 		BC6CCB492E2E7D7700DEEDF9 /* App constant */ = {
 			isa = PBXGroup;
 			children = (
+				BC8919C32E51907200C6CF3C /* Reachability.swift */,
 				BCA24B152E4F63F9008E3857 /* DataManager.swift */,
 				BCA24B132E4F20DD008E3857 /* UITextField+InputView.swift */,
 				BC2F2DE32E4DCF6A0031E036 /* S3Uploader.swift */,
@@ -540,6 +543,7 @@
 				BCE8BFDD2E3FBC240064F4D4 /* TermsAndConditionVC.swift in Sources */,
 				BCA24B162E4F63FA008E3857 /* DataManager.swift in Sources */,
 				BC19AD082E3E575300F8E9D2 /* Alertview.swift in Sources */,
+				BC8919C42E51907200C6CF3C /* Reachability.swift in Sources */,
 				BC6CCB242E2E6B3A00DEEDF9 /* AppDelegate.swift in Sources */,
 				BCE8BFD42E3F9F130064F4D4 /* FAQsViewController.swift in Sources */,
 				BC19AD1D2E3E71D500F8E9D2 /* OTPTextField.swift in Sources */,

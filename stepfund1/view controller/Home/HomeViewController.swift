@@ -9,6 +9,7 @@ import UIKit
 import CoreMotion
 import Kingfisher
 import MKMagneticProgress
+import CoreMotion
 
 class HomeViewController: UIViewController {
 
@@ -38,6 +39,8 @@ class HomeViewController: UIViewController {
     var currentStepRunning = true
     var progressValue = 0
     let maxCount: Int = 200
+    let pedometer = CMPedometer()
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -45,17 +48,22 @@ class HomeViewController: UIViewController {
         navigationController?.isNavigationBarHidden = true
         
         setupViewFont()
-       
-        
-        self.lblUserName.text = UserDefaultsSettings.user?.fullname ?? ""
         
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
+        
+        self.lblUserName.attributedText = AppData.setLabelMultipleColor(firstText: "Hello! ", secondText: "\(UserDefaultsSettings.user?.fullname ?? "")", thirdText: "", fourthText: "", fifthText: "", firstColor: UIColor.white, secondColor: UIColor(hex: "0059FF"), thirdColor: UIColor.clear, fourthColor: UIColor.clear, fifthColor: UIColor.clear)
+        
         self.imgProfile.kf.setImage(with: URL(string: UserDefaultsSettings.user?.profileImage ?? ""),placeholder: UIImage(named: "user"))
         
-        self.getTotalStepAndEarnAPI()
+        if Reachability.isConnectedToNetwork(){
+            self.getTotalStepAndEarnAPI()
+        }else{
+            AlertView.showOKTitleAlert(AppConstant.noInternetConnection, viewcontroller: self)
+        }
+        
         
         magProgress.titleLabel.textColor = UIColor.white
         magProgress.titleLabel.textColor = UIColor.white
@@ -94,6 +102,30 @@ class HomeViewController: UIViewController {
         labelInviteFriends.font = UIFont(name: "GolosText-Regular", size: 12)
         
     }
+    
+    func startButtonTapped() {
+        if CMPedometer.isStepCountingAvailable() {
+            pedometer.startUpdates(from: Date()) { [weak self] data, error in
+                guard let self = self, let data = data, error == nil else {
+                    print("Pedometer error: \(error?.localizedDescription ?? "unknown error")")
+                    return
+                }
+                DispatchQueue.main.async {
+                    if Int(data.numberOfSteps) < self.maxCount {
+                       // data.numberOfSteps += 1
+                        let progress = Float(Int(data.numberOfSteps)) / Float(self.maxCount)
+                           print(CGFloat(progress))
+                        self.magProgress.setProgress(progress: CGFloat(progress), animated: true)
+                       }else{
+                           print("Progress complete!")
+                       }
+                    self.lblCurrentSteps.text = "\(data.numberOfSteps)"
+                }
+            }
+        } else {
+            print("Step counting not available on this device.")
+        }
+    }
 }
 
 //MARK:- Buttom Action
@@ -106,21 +138,16 @@ extension HomeViewController{
     }
     
     @IBAction func btnPlayPauseClicked(_ sender: UIButton) {
-        if progressValue < maxCount {
-            progressValue += 1
-            let progress = Float(progressValue) / Float(maxCount)
-            print(CGFloat(progress))
-            magProgress.setProgress(progress: CGFloat(progress), animated: true)
-        }else{
-            print("Progress complete!")
-        }
-        
         
         if currentStepRunning {
+            //start
             btnPlayPause.setImage(UIImage(named: "StepCount_Pause"), for: .normal)
-                        
+            startButtonTapped()
         } else {
+            //stop
             btnPlayPause.setImage(UIImage(named: "StepCount_Play"), for: .normal)
+            pedometer.stopUpdates()
+            print("Stopped step counting.")
         }
         currentStepRunning = !currentStepRunning
     }
@@ -173,9 +200,7 @@ extension HomeViewController{
         request.addValue("text/plain", forHTTPHeaderField: "Content-Type")
         request.addValue(UserDefaultsSettings.user?.encToken ?? "", forHTTPHeaderField: "token")
 
-
         request.httpMethod = "POST"
-
         
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
           guard let data = data else {

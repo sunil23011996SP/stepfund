@@ -72,7 +72,12 @@ class ProfileViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
         
-        self.postProfileDetailAPI()
+        if Reachability.isConnectedToNetwork(){
+            self.postProfileDetailAPI()
+        }else{
+            AlertView.showOKTitleAlert(AppConstant.noInternetConnection, viewcontroller: self)
+        }
+        
     }
     
     //--------------------------------------------------
@@ -201,12 +206,20 @@ class ProfileViewController: UIViewController {
     }
     
     @IBAction func btnYesDeleteAccountClikced(_ sender: UIButton) {
-        viewPopupMain.isHidden = true
-        viewDeletePopup.isHidden = true
+        if Reachability.isConnectedToNetwork(){
+            self.postDeleteAccountAPI()
+        }else{
+            AlertView.showOKTitleAlert(AppConstant.noInternetConnection, viewcontroller: self)
+        }
+       
     }
     @IBAction func btnYesLogoutAccountClikced(_ sender: UIButton) {
-        viewPopupMain.isHidden = true
-        viewLogoutPopup.isHidden = true
+        if Reachability.isConnectedToNetwork(){
+            self.postLogoutAPI()
+        }else{
+            AlertView.showOKTitleAlert(AppConstant.noInternetConnection, viewcontroller: self)
+        }
+        
     }
     @IBAction func btnNoThanksDeleteClikced(_ sender: UIButton) {
         viewPopupMain.isHidden = true
@@ -366,15 +379,10 @@ extension ProfileViewController{
                             }
                             else{
                                 AlertView.showOKTitleAlert(jsonData.message, viewcontroller: self)
-                                
                             }
                             AppData.HideProgress()
                         }
-                        
-                    }
-                    
-                    
-                    
+                    }                    
                 }
             } catch {
                 print("error")
@@ -385,9 +393,173 @@ extension ProfileViewController{
 
     }
     
+    func postLogoutAPI(){
+
+        AppData.ShowProgress()
+
+        var request = URLRequest(url: URL(string: DataManager.shared.getURL(.logout))!,timeoutInterval: Double.infinity)
+        request.addValue("Gemflb3MR+S7AcOvPSfNSA==", forHTTPHeaderField: "api-key")
+        request.addValue("en", forHTTPHeaderField: "accept-language")
+        request.addValue("text/plain", forHTTPHeaderField: "Content-Type")
+        request.addValue(UserDefaultsSettings.user?.encToken ?? "", forHTTPHeaderField: "token")
+
+
+        request.httpMethod = "POST"
+
+        
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+          guard let data = data else {
+            print(String(describing: error))
+            return
+          }
+            self.postLogoutDecryptionAPI(resEncValue: String(data: data, encoding: .utf8)!)
+        }
+
+        task.resume()
+
+    }
+    
+    func postLogoutDecryptionAPI(resEncValue:String){
+                
+        let postData = resEncValue.data(using: .utf8)
+
+        var request = URLRequest(url: URL(string: DataManager.shared.getURL(.getDecryption))!,timeoutInterval: Double.infinity)
+        request.addValue("Gemflb3MR+S7AcOvPSfNSA==", forHTTPHeaderField: "api-key")
+        request.addValue("en", forHTTPHeaderField: "accept-language")
+        request.addValue("text/plain", forHTTPHeaderField: "Content-Type")
+
+        request.httpMethod = "POST"
+        request.httpBody = postData
+
+        let task = URLSession.shared.dataTask(with: request as URLRequest) { data, response, error in
+            
+            do {
+                if let data = data {
+                    DispatchQueue.main.async {
+                        let decoder = JSONDecoder()
+                        if let jsonData = try? decoder.decode(LogoutResModel.self, from: data) {
+                            print("response",jsonData)
+                            if jsonData.code == "1" {
+                                self.viewPopupMain.isHidden = true
+                                self.viewLogoutPopup.isHidden = true
+                                let vc = LoginViewController.viewController()
+                                UserDefaultsSettings.clearDefaultData()
+                                self.navigationController?.pushViewController(vc, animated: true)
+                                
+                            }
+                            else if jsonData.code == "-1"{
+                                AppData.HideProgress()
+                                AlertView.showAlert(jsonData.message, strMessage: "", button: ["OK"], viewcontroller: self) { (btn) in
+                                    if btn == 0 {
+                                        let vc = LoginViewController.viewController()
+                                        UserDefaultsSettings.clearDefaultData()
+                                        self.navigationController?.pushViewController(vc, animated: true)
+                                    }
+                                }
+                            }
+                            else{
+                                AlertView.showOKTitleAlert(jsonData.message, viewcontroller: self)
+                            }
+                            AppData.HideProgress()
+                        }
+                    }
+                }
+            } catch {
+                print("error")
+            }
+        }
+        task.resume()
+
+    }
+    
+    
+    func postDeleteAccountAPI(){
+
+        AppData.ShowProgress()
+
+        var request = URLRequest(url: URL(string: DataManager.shared.getURL(.deleteAccount))!,timeoutInterval: Double.infinity)
+        request.addValue("Gemflb3MR+S7AcOvPSfNSA==", forHTTPHeaderField: "api-key")
+        request.addValue("en", forHTTPHeaderField: "accept-language")
+        request.addValue("text/plain", forHTTPHeaderField: "Content-Type")
+        request.addValue(UserDefaultsSettings.user?.encToken ?? "", forHTTPHeaderField: "token")
+
+
+        request.httpMethod = "POST"
+
+        
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+          guard let data = data else {
+            print(String(describing: error))
+            return
+          }
+            self.postDeleteAccountDecryptionAPI(resEncValue: String(data: data, encoding: .utf8)!)
+        }
+
+        task.resume()
+
+    }
+    
+    func postDeleteAccountDecryptionAPI(resEncValue:String){
+                
+        let postData = resEncValue.data(using: .utf8)
+
+        var request = URLRequest(url: URL(string: DataManager.shared.getURL(.getDecryption))!,timeoutInterval: Double.infinity)
+        request.addValue("Gemflb3MR+S7AcOvPSfNSA==", forHTTPHeaderField: "api-key")
+        request.addValue("en", forHTTPHeaderField: "accept-language")
+        request.addValue("text/plain", forHTTPHeaderField: "Content-Type")
+
+        request.httpMethod = "POST"
+        request.httpBody = postData
+
+        let task = URLSession.shared.dataTask(with: request as URLRequest) { data, response, error in
+            
+            do {
+                if let data = data {
+                    DispatchQueue.main.async {
+                        let decoder = JSONDecoder()
+                        if let jsonData = try? decoder.decode(LogoutResModel.self, from: data) {
+                            print("response",jsonData)
+                            if jsonData.code == "1" {
+                                self.viewPopupMain.isHidden = true
+                                self.viewDeletePopup.isHidden = true
+                                let vc = LoginViewController.viewController()
+                                UserDefaultsSettings.clearDefaultData()
+                                self.navigationController?.pushViewController(vc, animated: true)
+                            }
+                            else if jsonData.code == "-1"{
+                                AppData.HideProgress()
+                                AlertView.showAlert(jsonData.message, strMessage: "", button: ["OK"], viewcontroller: self) { (btn) in
+                                    if btn == 0 {
+                                        let vc = LoginViewController.viewController()
+                                        UserDefaultsSettings.clearDefaultData()
+                                        self.navigationController?.pushViewController(vc, animated: true)
+                                    }
+                                }
+                            }
+                            else{
+                                AlertView.showOKTitleAlert(jsonData.message, viewcontroller: self)
+                            }
+                            AppData.HideProgress()
+                        }
+                    }
+                }
+            } catch {
+                print("error")
+            }
+        }
+
+        task.resume()
+
+    }
 }
 
 struct ProfileResModel: Codable {
+    let code: String
+    let message: String
+    let data: LoginDataResModel?
+}
+
+struct LogoutResModel: Codable {
     let code: String
     let message: String
     let data: LoginDataResModel?

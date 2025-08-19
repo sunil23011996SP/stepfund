@@ -78,7 +78,12 @@ class AddBankDetailVC: UIViewController {
     //--------------------------------------------------
     @IBAction func btnSubmitClikced(_ sender: UIButton) {
         if validate() {
-            self.postEncryptionAPI()
+            if Reachability.isConnectedToNetwork(){
+                self.postEncryptionAPI()
+            }else{
+                AlertView.showOKTitleAlert(AppConstant.noInternetConnection, viewcontroller: self)
+            }
+            
         }
     }
    

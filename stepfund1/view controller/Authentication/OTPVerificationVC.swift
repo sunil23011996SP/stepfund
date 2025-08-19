@@ -95,7 +95,11 @@ class OTPVerificationVC: UIViewController {
         else if enteredOTP == otp{
             
             if fromSignUpVC == true{
-                postSignupEncryptionAPI()
+                if Reachability.isConnectedToNetwork(){
+                    postSignupEncryptionAPI()
+                }else{
+                    AlertView.showOKTitleAlert(AppConstant.noInternetConnection, viewcontroller: self)
+                }
             }else{
                 let vc = CreateNewPasswordVC.viewController()
                 vc.token = token
@@ -107,7 +111,12 @@ class OTPVerificationVC: UIViewController {
     
     
     @IBAction func btnResendOTPClikced(_ sender: UIButton) {
-        self.sendEmailEncryptionAPI(email: email)
+        if Reachability.isConnectedToNetwork(){
+            self.sendEmailEncryptionAPI(email: email)
+        }else{
+            AlertView.showOKTitleAlert(AppConstant.noInternetConnection, viewcontroller: self)
+        }
+        
     }
     
     @IBAction func backButtonClikced(_ sender: UIButton) {

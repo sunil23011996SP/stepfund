@@ -62,7 +62,12 @@ class CreateNewPasswordVC: UIViewController {
     //--------------------------------------------------
     @IBAction func btnSubmitClikced(_ sender: UIButton) {
         if validate() {
-            self.postEncryptionAPI(email: txtNewPassword.text ?? "")
+            if Reachability.isConnectedToNetwork(){
+                self.postEncryptionAPI(email: txtNewPassword.text ?? "")
+            }else{
+                AlertView.showOKTitleAlert(AppConstant.noInternetConnection, viewcontroller: self)
+            }
+            
         }
     }
     @IBAction func btnShowNewPasswordClicked(sender: AnyObject) {

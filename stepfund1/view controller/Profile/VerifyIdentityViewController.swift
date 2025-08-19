@@ -115,7 +115,11 @@ class VerifyIdentityViewController: UIViewController,UIImagePickerControllerDele
     //--------------------------------------------------
     @IBAction func btnSubmitClikced(_ sender: UIButton) {
         if validate() {
-            uploadFile(withImage: imgviewDocument.image!)
+            if Reachability.isConnectedToNetwork(){
+                uploadFile(withImage: imgviewDocument.image!)
+            }else{
+                AlertView.showOKTitleAlert(AppConstant.noInternetConnection, viewcontroller: self)
+            }            
         }
     }
    

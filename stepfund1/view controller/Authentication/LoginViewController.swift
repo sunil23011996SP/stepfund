@@ -7,6 +7,7 @@
 
 import UIKit
 
+
 class LoginViewController: UIViewController {
 
     @IBOutlet weak var labelReadyto: UILabel!
@@ -63,7 +64,12 @@ class LoginViewController: UIViewController {
     
     @IBAction func btnLoginClikced(_ sender: UIButton) {
         if validate() {
-            self.postEncryptionAPI()
+            if Reachability.isConnectedToNetwork(){
+                self.postEncryptionAPI()
+            }else{
+                AlertView.showOKTitleAlert(AppConstant.noInternetConnection, viewcontroller: self)
+            }
+           
         }
     }
     

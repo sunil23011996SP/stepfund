@@ -18,7 +18,12 @@ class TermsAndConditionVC: UIViewController {
 
         labelTermsCondtion.font = UIFont(name: "GolosText-SemiBold", size: 16)
 
-        postTermsConditionAPI()
+        if Reachability.isConnectedToNetwork(){
+            self.postTermsConditionAPI()
+        }else{
+            AlertView.showOKTitleAlert(AppConstant.noInternetConnection, viewcontroller: self)
+        }
+        
         
         // Do any additional setup after loading the view.
     }

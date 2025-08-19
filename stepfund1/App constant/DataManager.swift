@@ -67,7 +67,9 @@ enum WSEndPoints: String {
     case resetPassword                     = "user/reset_password"
     case checkDuplication                     = "user/check_duplication"
 
-    
+    case logout                     = "user/logout"
+    case deleteAccount                     = "user/delete_account"
+
 }
 
 //------------------------------------------------------------------------------

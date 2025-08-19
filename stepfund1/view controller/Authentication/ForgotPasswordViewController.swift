@@ -42,7 +42,12 @@ class ForgotPasswordViewController: UIViewController {
     
     @IBAction func btnSubmitClikced(_ sender: UIButton) {
         if validate() {
-            self.postEncryptionAPI(email: txtEmail.text ?? "")
+            if Reachability.isConnectedToNetwork(){
+                self.postEncryptionAPI(email: txtEmail.text ?? "")
+            }else{
+                AlertView.showOKTitleAlert(AppConstant.noInternetConnection, viewcontroller: self)
+            }
+            
         }
     }
     
