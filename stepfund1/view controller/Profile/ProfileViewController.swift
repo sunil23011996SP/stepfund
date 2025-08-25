@@ -564,3 +564,86 @@ struct LogoutResModel: Codable {
     let message: String
     let data: LoginDataResModel?
 }
+
+
+import Foundation
+import CommonCrypto
+
+struct AES256 {
+    static let key = "KWpgz1c6i9pDcvh8T/KbUA=="
+
+    static func randomIV() -> Data {
+        var iv = Data(count: kCCBlockSizeAES128)
+        _ = iv.withUnsafeMutableBytes { ivBytes in
+            SecRandomCopyBytes(kSecRandomDefault, kCCBlockSizeAES128, ivBytes.baseAddress!)
+        }
+        return iv
+    }
+
+    static func encrypt(string: String) -> String? {
+        guard let dataToEncrypt = string.data(using: .utf8),
+              let keyData = key.data(using: .utf8) else { return nil }
+
+        let iv = randomIV()
+        let cryptLength = size_t(dataToEncrypt.count + kCCBlockSizeAES128)
+        var cryptData = Data(count: cryptLength)
+
+        var numBytesEncrypted: size_t = 0
+        let cryptStatus = cryptData.withUnsafeMutableBytes { cryptBytes in
+            dataToEncrypt.withUnsafeBytes { dataBytes in
+                iv.withUnsafeBytes { ivBytes in
+                    keyData.withUnsafeBytes { keyBytes in
+                        CCCrypt(
+                            CCOperation(kCCEncrypt),
+                            CCAlgorithm(kCCAlgorithmAES),
+                            CCOptions(kCCOptionPKCS7Padding),
+                            keyBytes.baseAddress!, keyData.count,
+                            ivBytes.baseAddress!,
+                            dataBytes.baseAddress!, dataToEncrypt.count,
+                            cryptBytes.baseAddress!, cryptLength,
+                            &numBytesEncrypted)
+                    }
+                }
+            }
+        }
+
+        guard cryptStatus == kCCSuccess else { return nil }
+        cryptData.removeSubrange(numBytesEncrypted..<cryptData.count)
+        let finalData = iv + cryptData
+        return finalData.base64EncodedString()
+    }
+
+    static func decrypt(base64String: String) -> String? {
+        guard let fullData = Data(base64Encoded: base64String),
+              let keyData = "KWpgz1c6i9pDcvh8T/KbUA==".data(using: .utf8) else { return nil }
+
+        let iv = fullData.subdata(in: 0..<kCCBlockSizeAES128)
+        let encryptedData = fullData.subdata(in: kCCBlockSizeAES128..<fullData.count)
+
+        let cryptLength = size_t(encryptedData.count)
+        var decryptedData = Data(count: cryptLength)
+
+        var numBytesDecrypted: size_t = 0
+        let cryptStatus = decryptedData.withUnsafeMutableBytes { decryptedBytes in
+            encryptedData.withUnsafeBytes { encryptedBytes in
+                iv.withUnsafeBytes { ivBytes in
+                    keyData.withUnsafeBytes { keyBytes in
+                        CCCrypt(
+                            CCOperation(kCCDecrypt),
+                            CCAlgorithm(kCCAlgorithmAES),
+                            CCOptions(kCCOptionPKCS7Padding),
+                            keyBytes.baseAddress!, keyData.count,
+                            ivBytes.baseAddress!,
+                            encryptedBytes.baseAddress!, encryptedData.count,
+                            decryptedBytes.baseAddress!, cryptLength,
+                            &numBytesDecrypted)
+                    }
+                }
+            }
+        }
+
+        guard cryptStatus == kCCSuccess else { return nil }
+        decryptedData.removeSubrange(numBytesDecrypted..<decryptedData.count)
+        return String(data: decryptedData, encoding: .utf8)
+    }
+}

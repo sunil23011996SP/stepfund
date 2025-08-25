@@ -101,7 +101,7 @@ class AddSubscriptionViewController: UIViewController,UIImagePickerControllerDel
     @IBAction func backButtonClikced(_ sender: UIButton) {
         self.navigationController?.popViewController(animated: true)
     }
-    
+        
     @IBAction func btnUploadProfile(_ sender: UIButton) {
         self.view.endEditing(true)
         let alert = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)

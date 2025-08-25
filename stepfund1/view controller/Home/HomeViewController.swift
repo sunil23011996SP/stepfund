@@ -10,6 +10,7 @@ import CoreMotion
 import Kingfisher
 import MKMagneticProgress
 import CoreMotion
+import CommonCrypto
 
 class HomeViewController: UIViewController {
 
@@ -64,7 +65,17 @@ class HomeViewController: UIViewController {
             AlertView.showOKTitleAlert(AppConstant.noInternetConnection, viewcontroller: self)
         }
         
-        
+        let encryptedBase64 = "LvA2z6VOydGsZL5+7WTgNoS+OvtQ7qlD+tDMQJ8SCIBnU/cBoZWJ+EWAK618/jk72r5ZCZ4wfLVvhQQEk1b8icBNndjIeUubJh8qRCdfolTfdZjqBpxGkPtfaWGfTpFyXVJtJauIpO521L6Z7lBqRcRTTSx5NxCFCNTQGAzN2Wk="
+
+        // Your 32-byte key string
+        let key = "xDzIhX1eo7sune1aukb9BrtyMpqwsd2h"
+
+        if let decrypted = decryptAES256CBC(base64String: encryptedBase64, keyString: key) {
+            print("Decrypted text: \(decrypted)")
+        } else {
+            print("Failed to decrypt")
+        }
+
         magProgress.titleLabel.textColor = UIColor.white
         magProgress.titleLabel.textColor = UIColor.white
         //magProgress.inset = 200.0
@@ -124,8 +135,59 @@ class HomeViewController: UIViewController {
             }
         } else {
             print("Step counting not available on this device.")
+            self.view.makeToast("Step counting not available on this device.    ")
         }
     }
+    
+    func decryptAES256CBC(base64String: String, keyString: String) -> String? {
+        guard let fullData = Data(base64Encoded: base64String) else {
+            print("Invalid Base64 string")
+            return nil
+        }
+        
+        // Extract IV (first 16 bytes)
+        let iv = fullData.prefix(16)
+        // Extract ciphertext (remaining bytes)
+        let ciphertext = fullData.dropFirst(16)
+        
+        guard let keyData = keyString.data(using: .utf8 ), keyData.count == kCCKeySizeAES256 else {
+            print("Key must be 32 bytes (256 bits)")
+            return nil
+        }
+        
+        
+        let bufferSize = ciphertext.count + kCCBlockSizeAES128
+        var buffer = Data(count: bufferSize)
+        var numBytesDecrypted: size_t = 0
+        
+        let cryptStatus = buffer.withUnsafeMutableBytes { bufferBytes in
+            ciphertext.withUnsafeBytes { ciphertextBytes in
+                keyData.withUnsafeBytes { keyBytes in
+                    iv.withUnsafeBytes { ivBytes in
+                        CCCrypt(
+                            CCOperation(kCCDecrypt),
+                            CCAlgorithm(kCCAlgorithmAES),
+                            CCOptions(kCCOptionPKCS7Padding),
+                            keyBytes.baseAddress, kCCKeySizeAES256,
+                            ivBytes.baseAddress,
+                            ciphertextBytes.baseAddress, ciphertext.count,
+                            bufferBytes.baseAddress, bufferSize,
+                            &numBytesDecrypted
+                        )
+                    }
+                }
+            }
+        }
+        
+        if cryptStatus == kCCSuccess {
+            buffer.count = numBytesDecrypted
+            return String(data: buffer, encoding: .utf8)
+        } else {
+            print("Decryption failed with status: \(cryptStatus)")
+            return nil
+        }
+    }
+
 }
 
 //MARK:- Buttom Action
@@ -288,7 +350,12 @@ extension HomeViewController{
             print(String(describing: error))
             return
           }
-            self.postGetKeysDecryptionAPI(resEncValue: String(data: data, encoding: .utf8)!)
+            
+            
+            
+            print(AES256.decrypt(base64String: String(data: data, encoding: .utf8)!))
+            
+           
         }
 
         task.resume()
